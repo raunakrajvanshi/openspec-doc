@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>OpenSpec Docs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=IBM+Plex+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0e0f14;--bg2:#13141b;--bg3:#1a1b24;--border:#252733;--border2:#2e3044;
+  --text:#e8e9f0;--muted:#7c7f96;--muted2:#555870;
+  --gold:#f0a500;--gold-dim:#6b4a00;--green:#3dd68c;--red:#f87171;--blue:#60a5fa;
+  --code-bg:#080910;
+  --radius:10px;
+  --ff-head:'Playfair Display',Georgia,serif;
+  --ff-body:'DM Sans',system-ui,sans-serif;
+  --ff-code:'IBM Plex Mono',monospace;
+}
+:root.light{
+  --bg:#f8f7f4;--bg2:#ffffff;--bg3:#f0efe9;--border:#e2e0d8;--border2:#ccc9bc;
+  --text:#1a1a1a;--muted:#6b6860;--muted2:#999588;
+  --gold:#c47f00;--gold-dim:#ffe4a0;--green:#1a8f5c;--red:#c0392b;--blue:#2563eb;
+  --code-bg:#1e1e2e;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;transition:background 0.25s,color 0.25s}
+
+.layout{display:flex;min-height:100vh}
+
+/* SIDEBAR */
+.sidebar{width:230px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--border);position:fixed;top:0;left:0;bottom:0;overflow-y:auto;z-index:100;display:flex;flex-direction:column;transition:background 0.25s,border-color 0.25s}
+.sidebar::-webkit-scrollbar{width:3px}.sidebar::-webkit-scrollbar-thumb{background:var(--border2)}
+.s-logo{padding:24px 20px 18px;border-bottom:1px solid var(--border)}
+.s-logo-text{font-family:var(--ff-head);font-size:20px;color:var(--text)}
+.s-logo-text em{font-style:italic;color:var(--gold)}
+.s-badge{margin-top:5px;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;gap:5px}
+.s-dot{width:5px;height:5px;border-radius:50%;background:var(--green)}
+.s-nav{padding:14px 10px;flex:1}
+.s-label{font-size:9px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted2);padding:0 10px;margin:18px 0 6px}
+.s-label:first-child{margin-top:4px}
+.s-btn{display:flex;align-items:center;gap:9px;width:100%;padding:8px 10px;border-radius:7px;background:transparent;border:none;cursor:pointer;font-size:13px;font-weight:400;color:var(--muted);font-family:var(--ff-body);text-align:left;transition:all 0.13s}
+.s-btn svg{width:14px;height:14px;flex-shrink:0;opacity:0.5;transition:opacity 0.13s}
+.s-btn:hover{background:var(--bg3);color:var(--text)}
+.s-btn:hover svg{opacity:0.8}
+.s-btn.active{background:rgba(240,165,0,0.1);color:var(--gold);font-weight:500}
+.s-btn.active svg{opacity:1;color:var(--gold)}
+.s-footer{padding:14px 20px;border-top:1px solid var(--border);font-size:11px;color:var(--muted2)}
+.s-footer a{color:var(--gold);text-decoration:none}
+
+/* MAIN */
+.main{margin-left:230px;flex:1;display:flex;flex-direction:column}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(14,15,20,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 44px;height:52px;display:flex;align-items:center;justify-content:space-between}
+:root.light .topbar{background:rgba(248,247,244,0.93)}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.theme-toggle{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:var(--bg3);cursor:pointer;transition:all 0.15s;flex-shrink:0}
+.theme-toggle:hover{border-color:var(--gold)}
+.theme-toggle svg{width:15px;height:15px;color:var(--muted)}
+.theme-toggle:hover svg{color:var(--gold)}
+.tb-crumb{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.tb-crumb span{color:var(--text);font-weight:500}
+.tb-search{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 12px;transition:border-color 0.15s}
+.tb-search:focus-within{border-color:var(--gold-dim)}
+.tb-search input{background:transparent;border:none;outline:none;font-size:12px;color:var(--text);font-family:var(--ff-body);width:180px}
+.tb-search input::placeholder{color:var(--muted2)}
+.tb-search svg{width:13px;height:13px;color:var(--muted2);flex-shrink:0}
+
+/* PAGES */
+.page{display:none;padding:52px 44px 100px;max-width:880px;animation:fadein 0.2s ease}
+.page.active{display:block}
+@keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* TYPOGRAPHY */
+.eyebrow{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.eyebrow::before{content:'';width:16px;height:1px;background:var(--gold)}
+h1{font-family:var(--ff-head);font-size:40px;font-weight:500;line-height:1.12;color:var(--text);margin-bottom:14px}
+h1 em{font-style:italic;color:var(--gold)}
+.lead{font-size:15px;color:var(--muted);line-height:1.75;max-width:600px;margin-bottom:36px}
+.sh{font-size:10px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin:44px 0 16px;display:flex;align-items:center;gap:10px}
+.sh::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* CARDS */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:32px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:border-color 0.2s,background 0.25s}
+.card:hover{border-color:var(--border2)}
+.card-icon{font-size:18px;margin-bottom:12px}
+.card h3{font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px}
+.card p{font-size:12px;color:var(--muted);line-height:1.6}
+
+/* FLOW */
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:16px 0 28px;padding:16px 18px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius)}
+.flow-node{font-family:var(--ff-code);font-size:11px;color:var(--gold);background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.2);padding:5px 10px;border-radius:5px;white-space:nowrap}
+.flow-arr{color:var(--muted2);font-size:12px}
+
+/* CODE */
+.cb{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;font-family:var(--ff-code);font-size:12px;line-height:1.95;color:#c9cfe0;white-space:pre-wrap;overflow-x:auto;margin:10px 0}
+.kw{color:#e89bff}.h{color:#7dd3fc}.ok{color:#86efac}.cm{color:#4b5260}.str{color:#fcd34d}
+
+/* SBS */
+.sbs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0 32px}
+.sbs-col{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+.sbs-head{padding:12px 16px;font-size:11px;font-weight:600;letter-spacing:0.04em;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
+.sbs-head.bad{background:rgba(248,113,113,0.07);color:var(--red)}
+.sbs-head.good{background:rgba(61,214,140,0.07);color:var(--green)}
+.sbs-body{padding:14px 16px;background:var(--bg2)}
+.sbs-item{font-size:12px;color:var(--muted);display:flex;gap:8px;margin-bottom:8px;line-height:1.5;align-items:flex-start}
+.sbs-item .ic{font-size:12px;flex-shrink:0;margin-top:1px}
+.sbs-col.bad .ic{color:var(--muted2)}
+.sbs-col.good .ic{color:var(--green)}
+
+/* TABLE */
+.tbl{width:100%;border-collapse:collapse;margin:12px 0 28px;font-size:13px}
+.tbl th{background:var(--bg3);padding:10px 14px;text-align:left;font-weight:600;color:var(--muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;border:1px solid var(--border)}
+.tbl td{padding:11px 14px;border:1px solid var(--border);color:var(--muted);vertical-align:top;line-height:1.5}
+.tbl td.hl{color:var(--text);font-weight:500}
+.tbl tr:nth-child(even) td{background:rgba(255,255,255,0.015)}
+
+/* CALLOUT */
+.note{display:flex;gap:12px;padding:14px 16px;border-radius:var(--radius);margin:16px 0}
+.note.info{background:rgba(240,165,0,0.07);border:1px solid rgba(240,165,0,0.2)}
+.note.success{background:rgba(61,214,140,0.07);border:1px solid rgba(61,214,140,0.2)}
+.note.warn{background:rgba(248,113,113,0.07);border:1px solid rgba(248,113,113,0.2)}
+.note-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.note-text{font-size:13px;line-height:1.65;color:var(--muted)}
+.note-text strong{color:var(--text)}
+
+/* STEPPER */
+.stepper{display:flex;flex-direction:column;margin:8px 0 36px}
+.step-row{display:flex;gap:16px}
+.step-spine{display:flex;flex-direction:column;align-items:center}
+.step-num{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-family:var(--ff-code);font-size:11px;font-weight:500;color:var(--muted);cursor:pointer;transition:all 0.2s;user-select:none}
+.step-num:hover{border-color:var(--gold);color:var(--gold)}
+.step-num.open{background:rgba(240,165,0,0.12);border-color:var(--gold);color:var(--gold)}
+.step-vline{width:1px;flex:1;min-height:16px;background:var(--border);margin:4px 0}
+.step-content{padding-bottom:24px;flex:1;padding-top:6px}
+.step-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px}
+.step-sub{font-size:12px;color:var(--muted);line-height:1.5}
+.step-cmd{display:inline-block;margin-top:8px;font-family:var(--ff-code);font-size:11px;color:var(--gold);background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.18);padding:4px 10px;border-radius:5px}
+.step-detail{margin-top:12px;padding:14px 16px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;font-size:12px;color:var(--muted);line-height:1.7;display:none}
+.step-detail.open{display:block;animation:fadein 0.15s ease}
+
+/* ACCORDION */
+.acc{border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;transition:border-color 0.15s}
+.acc:hover{border-color:var(--border2)}
+.acc.open{border-color:rgba(240,165,0,0.3)}
+.acc-head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;user-select:none}
+.acc-left{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.acc-name{font-family:var(--ff-code);font-size:13px;font-weight:500;color:var(--gold)}
+.acc-tag{font-size:9px;padding:2px 7px;border-radius:20px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;background:var(--bg3);color:var(--muted);border:1px solid var(--border)}
+.acc-summary{font-size:12px;color:var(--muted)}
+.acc-chev{font-size:12px;color:var(--muted);transition:transform 0.2s;flex-shrink:0}
+.acc.open .acc-chev{transform:rotate(180deg);color:var(--gold)}
+.acc-body{padding:0 20px 20px;display:none;border-top:1px solid var(--border);padding-top:18px}
+.acc.open .acc-body{display:block}
+.acc-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:14px}
+.acc-syntax{background:var(--code-bg);border:1px solid var(--border);border-radius:7px;padding:11px 14px;font-family:var(--ff-code);font-size:12px;color:#86efac;margin-bottom:14px}
+.acc-sect{font-size:10px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted2);margin:14px 0 8px}
+.acc-items{display:flex;flex-direction:column;gap:7px}
+.acc-item{display:flex;gap:8px;font-size:12px;color:var(--muted);line-height:1.5;align-items:flex-start}
+.acc-item .dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:5px}
+.acc-item .star{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0;margin-top:5px}
+
+/* SPEC TABS */
+.spec-bar{display:flex;gap:4px;margin-bottom:14px;flex-wrap:wrap}
+.spec-tab{padding:6px 14px;border-radius:6px;border:1px solid var(--border);font-size:12px;font-weight:500;cursor:pointer;background:var(--bg2);color:var(--muted);font-family:var(--ff-body);transition:all 0.13s}
+.spec-tab:hover{background:var(--bg3);color:var(--text)}
+.spec-tab.active{background:rgba(240,165,0,0.12);color:var(--gold);border-color:rgba(240,165,0,0.3)}
+.spec-pane{display:none}
+.spec-pane.active{display:block;animation:fadein 0.15s ease}
+.spec-note{font-size:12px;color:var(--muted);margin-top:10px;padding:10px 14px;background:var(--bg2);border-radius:7px;border-left:2px solid var(--gold);line-height:1.6}
+
+/* TREE - proper waterfall */
+.tree{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 24px;font-family:var(--ff-code);font-size:12.5px;overflow-x:auto}
+.tree-row{display:flex;align-items:center;min-height:28px;white-space:nowrap}
+.tree-pfx{color:#2e3555;flex-shrink:0;margin-right:1px;user-select:none;letter-spacing:-0.02em}
+.td{color:#60a5fa;font-weight:500}.tf{color:#555870}.th{color:#c084fc;font-weight:500}.tc{color:#2e3555;margin-left:10px;font-size:11px}
+
+/* DELTA */
+.delta{background:var(--code-bg);border:1px solid var(--border);border-radius:var(--radius);padding:20px 22px;font-family:var(--ff-code);font-size:12px;line-height:1.9}
+.dl{padding:2px 8px;border-radius:3px;margin:2px 0;display:block}
+.dl-a{background:rgba(134,239,172,0.07);color:#86efac}
+.dl-r{background:rgba(248,113,113,0.07);color:#f87171}
+.dl-c{color:var(--muted2)}
+
+/* CHECKLIST */
+.chk-list{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.chk-item{display:flex;align-items:center;gap:12px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;cursor:pointer;transition:border-color 0.15s}
+.chk-item:hover{border-color:var(--border2)}
+.chk-item.done{border-color:rgba(61,214,140,0.3);background:rgba(61,214,140,0.04)}
+.chk-box{font-size:15px;color:var(--border2);transition:color 0.15s;flex-shrink:0;line-height:1;font-family:var(--ff-code)}
+.chk-item.done .chk-box{color:var(--green)}
+.chk-main{font-size:13px;font-weight:500;color:var(--text)}
+.chk-sub{font-size:11px;color:var(--muted);font-family:var(--ff-code);margin-top:2px}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.pill-gold{background:rgba(240,165,0,0.1);color:var(--gold);border:1px solid rgba(240,165,0,0.2)}
+.pill-green{background:rgba(61,214,140,0.1);color:var(--green);border:1px solid rgba(61,214,140,0.2)}
+.pill-blue{background:rgba(96,165,250,0.1);color:var(--blue);border:1px solid rgba(96,165,250,0.2)}
+
+/* PHI */
+.phi{display:flex;gap:14px;align-items:flex-start;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;margin-bottom:10px;transition:border-color 0.15s}
+.phi:hover{border-color:var(--border2)}
+.phi-icon{width:36px;height:36px;border-radius:8px;background:rgba(240,165,0,0.08);border:1px solid rgba(240,165,0,0.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:15px}
+.phi h3{font-size:13px;font-weight:600;color:var(--text);margin-bottom:5px}
+.phi p{font-size:12px;color:var(--muted);line-height:1.6}
+
+code{font-family:var(--ff-code);font-size:11px;background:var(--bg3);border:1px solid var(--border);padding:2px 6px;border-radius:4px;color:var(--gold)}
+
+@media(max-width:800px){
+  .sidebar{display:none}.main{margin-left:0}.topbar,.page{padding-left:20px;padding-right:20px}
+  .sbs,.grid{grid-template-columns:1fr}.tb-search{display:none}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<aside class="sidebar">
+  <div class="s-logo">
+    <div class="s-logo-text">Open<em>Spec</em></div>
+    <div class="s-badge"><span class="s-dot"></span> open source · sdd</div>
+  </div>
+  <nav class="s-nav">
+    <div class="s-label">Get started</div>
+    <button class="s-btn active" onclick="nav('intro',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>What is OpenSpec?</button>
+    <button class="s-btn" onclick="nav('problems',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Why it exists</button>
+    <button class="s-btn" onclick="nav('concepts',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Core concepts</button>
+    <button class="s-btn" onclick="nav('structure',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Repo structure</button>
+    <div class="s-label">Setup</div>
+    <button class="s-btn" onclick="nav('install',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Installation</button>
+    <button class="s-btn" onclick="nav('setup',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/></svg>Project setup</button>
+    <div class="s-label">The workflow</div>
+    <button class="s-btn" onclick="nav('lifecycle',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Feature lifecycle</button>
+    <button class="s-btn" onclick="nav('specs-writing',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Writing specs</button>
+    <button class="s-btn" onclick="nav('delta',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>Delta specs</button>
+    <div class="s-label">Reference</div>
+    <button class="s-btn" onclick="nav('commands',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>Commands</button>
+    <button class="s-btn" onclick="nav('compare',this)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>Comparisons</button>
+  </nav>
+  <div class="s-footer"><a href="#">GitHub ↗</a> · v1.x · MIT</div>
+</aside>
+
+<div class="main">
+<header class="topbar">
+  <div class="tb-crumb">OpenSpec · <span id="bc">What is OpenSpec?</span></div>
+  <div class="topbar-right">
+    <div class="tb-search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" placeholder="Search docs…" oninput="search(this.value)"/>
+    </div>
+    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle light/dark mode" id="theme-btn">
+      <svg id="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+    </button>
+  </div>
+</header>
+
+<!-- INTRO -->
+<div class="page active" id="p-intro">
+  <div class="eyebrow">Overview</div>
+  <h1>What is <em>OpenSpec</em>?</h1>
+  <p class="lead">A framework that puts software specifications inside your repo — so AI coding assistants stop guessing and start understanding your system.</p>
+  <div class="note info"><span class="note-icon">💡</span><div class="note-text"><strong>One sentence:</strong> Instead of re-explaining your architecture every AI session, OpenSpec stores requirements, decisions, and architecture in Git — permanently, alongside your code.</div></div>
+  <div class="sh">The core shift</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Prompt-only today</div><div class="sbs-body"><div class="cb" style="font-size:11px;padding:14px 16px">Prompt → AI <span style="color:#f87171">guesses</span> requirements
+     → Generates code
+     → You fix inconsistencies
+     → Repeat next session</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  OpenSpec workflow</div><div class="sbs-body"><div class="cb" style="font-size:11px;padding:14px 16px">Spec → AI <span style="color:#86efac">understands</span> requirements
+     → Generates code
+     → Specs stay in Git
+     → Next session: same context</div></div></div>
+  </div>
+  <div class="sh">Best for</div>
+  <div class="grid">
+    <div class="card"><div class="card-icon">🏗️</div><h3>Large codebases</h3><p>Context grows too big for one AI session. Specs keep the whole picture available.</p></div>
+    <div class="card"><div class="card-icon">👥</div><h3>Teams</h3><p>Multiple developers need shared, consistent understanding that doesn't live in anyone's head.</p></div>
+    <div class="card"><div class="card-icon">🕰️</div><h3>Long-lived projects</h3><p>Decisions made six months ago still matter. Archives make that history searchable.</p></div>
+    <div class="card"><div class="card-icon">🤖</div><h3>Heavy AI usage</h3><p>The more you use Cursor, Claude Code, or Copilot, the more persistent context pays off.</p></div>
+  </div>
+</div>
+
+<!-- PROBLEMS -->
+<div class="page" id="p-problems">
+  <div class="eyebrow">Pain points</div>
+  <h1>Why it <em>exists</em></h1>
+  <p class="lead">Four real problems that appear as teams scale AI-assisted development — each one with a concrete before/after.</p>
+  <div class="sh">1 — AI context loss</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Without OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">×</span>New session → AI forgot your auth system uses JWT</div><div class="sbs-item"><span class="ic">×</span>Generates session-cookie approach instead</div><div class="sbs-item"><span class="ic">×</span>20 min re-explaining the architecture again</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  With OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">✓</span><code>openspec/specs/auth/spec.md</code>: JWT, 24h expiry, refresh tokens</div><div class="sbs-item"><span class="ic">✓</span>AI reads the spec before generating anything</div><div class="sbs-item"><span class="ic">✓</span>Consistent output, zero re-explaining</div></div></div>
+  </div>
+  <div class="sh">2 — Inconsistent code generation</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Without OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">×</span>Monday: AI names it <code>getUserById()</code></div><div class="sbs-item"><span class="ic">×</span>Wednesday: AI names it <code>fetchUser()</code></div><div class="sbs-item"><span class="ic">×</span>Friday: AI names it <code>user_get()</code> — three patterns, one codebase</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  With OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">✓</span>Design doc defines naming conventions once</div><div class="sbs-item"><span class="ic">✓</span>Every AI session references the same doc</div><div class="sbs-item"><span class="ic">✓</span>Always <code>getUserById()</code> — every time</div></div></div>
+  </div>
+  <div class="sh">3 — Fragmented requirements</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Without OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">×</span>Requirements in Jira ticket #2341</div><div class="sbs-item"><span class="ic">×</span>Design decisions in a Slack thread (now deleted)</div><div class="sbs-item"><span class="ic">×</span>Edge cases discussed in a meeting (never documented)</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  With OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">✓</span>Requirements in <code>openspec/specs/</code></div><div class="sbs-item"><span class="ic">✓</span>Design decisions in <code>design.md</code></div><div class="sbs-item"><span class="ic">✓</span>Everything version-controlled, never lost</div></div></div>
+  </div>
+  <div class="sh">4 — Documentation drift</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Without OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">×</span>Docs written in Confluence</div><div class="sbs-item"><span class="ic">×</span>Code changes → nobody updates docs</div><div class="sbs-item"><span class="ic">×</span>6 months later: docs describe a system that no longer exists</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  With OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">✓</span>Spec changes committed with the code change</div><div class="sbs-item"><span class="ic">✓</span>PR reviewer sees the spec diff alongside the code diff</div><div class="sbs-item"><span class="ic">✓</span>Docs stay in sync by design, not by discipline</div></div></div>
+  </div>
+</div>
+
+<!-- CONCEPTS -->
+<div class="page" id="p-concepts">
+  <div class="eyebrow">Architecture</div>
+  <h1>Core <em>concepts</em></h1>
+  <p class="lead">Five building blocks. Each has one job. Together they form the complete OpenSpec system.</p>
+  <div class="sh">1 — Specs (source of truth)</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px">The official, current description of what your system does. Lives in <code>openspec/specs/</code>. AI reads this before implementing anything.</p>
+  <div class="cb"><span class="h">## Requirement: Session Expiration</span>
+
+The system <span class="ok">SHALL</span> expire inactive sessions after 24 hours.
+
+<span class="h">### Scenario: Auto-logout</span>
+<span class="ok">GIVEN</span> a user is authenticated
+<span class="ok">WHEN</span>  24 hours pass without activity
+<span class="ok">THEN</span>  invalidate the session token</div>
+  <div class="sh">2 — Changes (feature workspaces)</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px">Every feature or fix lives in its own isolated folder. One change = one logical feature.</p>
+  <div class="tree">
+    <div class="tree-row"><span class="td">openspec/changes/add-oauth-login/</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="th">proposal.md</span><span class="tc">← why this feature exists</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="th">design.md</span><span class="tc">← technical architecture</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="th">tasks.md</span><span class="tc">← checklist for AI to execute</span></div>
+    <div class="tree-row"><span class="tree-pfx">└──&nbsp;</span><span class="th">specs/</span><span class="tc">← what requirements change</span></div>
+  </div>
+  <div class="sh">3 — Tasks (AI execution steps)</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px">Atomic implementation steps. AI executes them one-by-one. <strong>Smaller = better</strong> output quality.</p>
+  <div class="cb"><span class="cm">- [ ]</span> Create <span class="str">/auth/google/callback</span> endpoint
+<span class="cm">- [ ]</span> Add <span class="str">passport-google-oauth20</span> library
+<span class="cm">- [ ]</span> Implement token exchange logic
+<span class="cm">- [ ]</span> Store session in httpOnly cookie
+<span class="cm">- [ ]</span> Add CSRF state param validation</div>
+  <div class="sh">4 — Delta specs (change tracking)</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px">What changed in this feature — just the diff, not the whole spec rewritten.</p>
+  <div class="delta">
+    <span class="dl dl-r">- REMOVED Requirement: Password-only auth</span>
+    <span class="dl dl-a">+ ADDED   Requirement: Google OAuth Login</span>
+    <span class="dl dl-c">  MODIFIED Requirement: Session Management</span>
+    <span class="dl dl-r">-   Sessions expire after 24 hours (fixed)</span>
+    <span class="dl dl-a">+   Sessions support configurable expiration (default: 24h)</span>
+  </div>
+  <div class="sh">5 — Archives (permanent history)</div>
+  <p style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px">Completed changes move here. Future developers and AI sessions can trace every decision.</p>
+  <div class="tree">
+    <div class="tree-row"><span class="td">openspec/archive/add-oauth-login/</span><span class="tc">← preserved forever</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="tf">proposal.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="tf">design.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="tf">tasks.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">└──&nbsp;</span><span class="tf">specs/</span></div>
+  </div>
+</div>
+
+<!-- STRUCTURE -->
+<div class="page" id="p-structure">
+  <div class="eyebrow">Architecture</div>
+  <h1>Repo <em>structure</em></h1>
+  <p class="lead">One directory added to your project. Three folders. Everything in Git — nothing external.</p>
+  <div class="tree">
+    <div class="tree-row"><span class="td">openspec/</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="td">specs/</span><span class="tc">← current system truth (always up to date)</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;├──&nbsp;</span><span class="th">auth/spec.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;├──&nbsp;</span><span class="th">payments/spec.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;└──&nbsp;</span><span class="th">notifications/spec.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">│</span></div>
+    <div class="tree-row"><span class="tree-pfx">├──&nbsp;</span><span class="td">changes/</span><span class="tc">← active work in progress</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;└──&nbsp;</span><span class="th">add-oauth-login/</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;</span><span class="tf">proposal.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;</span><span class="tf">design.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├──&nbsp;</span><span class="tf">tasks.md</span></div>
+    <div class="tree-row"><span class="tree-pfx">│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└──&nbsp;</span><span class="tf">specs/</span></div>
+    <div class="tree-row"><span class="tree-pfx">│</span></div>
+    <div class="tree-row"><span class="tree-pfx">└──&nbsp;</span><span class="td">archive/</span><span class="tc">← completed features (never delete)</span></div>
+    <div class="tree-row"><span class="tree-pfx">&nbsp;&nbsp;&nbsp;&nbsp;└──&nbsp;</span><span class="th">add-dark-mode/</span></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px">
+    <div class="card"><div style="margin-bottom:8px"><span class="pill pill-blue">specs/</span></div><p>Live, accurate description of what your system does right now. AI reads this before every implementation.</p></div>
+    <div class="card"><div style="margin-bottom:8px"><span class="pill pill-gold">changes/</span></div><p>Work-in-progress feature workspaces. Each has its own proposal, design, and tasks — isolated per feature.</p></div>
+    <div class="card"><div style="margin-bottom:8px"><span class="pill pill-green">archive/</span></div><p>Full history of every completed feature. Priceless for new team members and future AI sessions.</p></div>
+  </div>
+  <div class="note warn" style="margin-top:20px"><span class="note-icon">⚠️</span><div class="note-text"><strong>Never gitignore these folders.</strong> Specs, changes, and archives are first-class code — commit them exactly like source files.</div></div>
+</div>
+
+<!-- INSTALL -->
+<div class="page" id="p-install">
+  <div class="eyebrow">Setup</div>
+  <h1><em>Installation</em></h1>
+  <p class="lead">An npm package. Node 18+, Git, and a package manager is all you need.</p>
+  <div class="sh">Prerequisites</div>
+  <div class="chk-list">
+    <div class="chk-item" onclick="chk(this)"><span class="chk-box">○</span><div><div class="chk-main">Node.js 18+</div><div class="chk-sub">node -v</div></div></div>
+    <div class="chk-item" onclick="chk(this)"><span class="chk-box">○</span><div><div class="chk-main">Package manager — npm, pnpm, or yarn</div><div class="chk-sub">npm -v</div></div></div>
+    <div class="chk-item" onclick="chk(this)"><span class="chk-box">○</span><div><div class="chk-main">Git</div><div class="chk-sub">git --version</div></div></div>
+    <div class="chk-item" onclick="chk(this)"><span class="chk-box">○</span><div><div class="chk-main">AI coding assistant (recommended)</div><div class="chk-sub">Cursor · Claude Code · Copilot · Windsurf · Gemini CLI</div></div></div>
+  </div>
+  <div class="sh">Install</div>
+  <div class="grid">
+    <div class="card"><div style="font-family:var(--ff-code);font-size:11px;color:var(--gold);margin-bottom:8px">npm</div><div class="acc-syntax" style="margin:0">npm install -g @fission-ai/openspec@latest</div></div>
+    <div class="card"><div style="font-family:var(--ff-code);font-size:11px;color:var(--gold);margin-bottom:8px">pnpm</div><div class="acc-syntax" style="margin:0">pnpm add -g @fission-ai/openspec@latest</div></div>
+    <div class="card"><div style="font-family:var(--ff-code);font-size:11px;color:var(--gold);margin-bottom:8px">yarn</div><div class="acc-syntax" style="margin:0">yarn global add @fission-ai/openspec@latest</div></div>
+  </div>
+  <div class="sh">Verify</div>
+  <div class="cb">openspec --version   <span class="cm"># → 1.x.x</span>
+openspec --help</div>
+  <div class="sh">Common errors</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">command not found</div><div class="sbs-body" style="padding:14px 16px"><p style="font-size:12px;color:var(--muted);line-height:1.6">Global npm path isn't in your <code>PATH</code>. Fix: use <a href="https://github.com/nvm-sh/nvm" style="color:var(--gold)">NVM</a> — it handles PATH automatically.</p></div></div>
+    <div class="sbs-col bad"><div class="sbs-head bad">EACCES permission denied</div><div class="sbs-body" style="padding:14px 16px"><p style="font-size:12px;color:var(--muted);line-height:1.6">Prefix with <code>sudo</code>, or switch to NVM so global installs never need elevated permissions.</p></div></div>
+  </div>
+</div>
+
+<!-- SETUP -->
+<div class="page" id="p-setup">
+  <div class="eyebrow">Setup</div>
+  <h1>Project <em>setup</em></h1>
+  <p class="lead">Initialize once. Adopt incrementally. You don't need to spec your whole codebase on day one.</p>
+  <div class="sh">Initialize</div>
+  <div class="cb">cd my-project
+openspec init
+
+<span class="cm"># Creates:</span>
+<span class="ok">openspec/specs/
+openspec/changes/
+openspec/archive/</span></div>
+  <div class="sh">For existing projects — start with one module</div>
+  <div class="note info"><span class="note-icon">💡</span><div class="note-text"><strong>Brownfield tip:</strong> Start with the module that causes the most AI confusion — usually auth or payments. One good spec immediately pays off. Expand from there.</div></div>
+  <div class="grid">
+    <div class="card"><div class="card-icon">🔐</div><h3>Start: Auth</h3><p>High security impact, lots of edge cases — the perfect first spec that immediately improves AI output.</p></div>
+    <div class="card"><div class="card-icon">💳</div><h3>Then: Payments</h3><p>Complex business logic, many failure modes. Spec-first prevents AI missing critical paths.</p></div>
+    <div class="card"><div class="card-icon">🔔</div><h3>Then: Notifications</h3><p>Multiple channels, delivery guarantees — benefits greatly from structured scenarios.</p></div>
+    <div class="card"><div class="card-icon">📦</div><h3>Grow from there</h3><p>APIs → frontend → infrastructure. No rush — each spec adds value immediately.</p></div>
+  </div>
+  <div class="sh">Git best practices</div>
+  <div class="phi"><div class="phi-icon">📦</div><div><h3>Commit specs with code</h3><p>Always include spec changes in the same commit as the code. Reviewers see the "why" alongside the "what."</p></div></div>
+  <div class="phi"><div class="phi-icon">👁️</div><div><h3>Review specs in PRs</h3><p>Review spec changes before code changes. Understanding requirements first makes code review much faster.</p></div></div>
+  <div class="phi"><div class="phi-icon">🗄️</div><div><h3>Never delete archives</h3><p>Archives are institutional memory. Future AI sessions depend on them to understand historical decisions.</p></div></div>
+</div>
+
+<!-- LIFECYCLE -->
+<div class="page" id="p-lifecycle">
+  <div class="eyebrow">Workflow</div>
+  <h1>Feature <em>lifecycle</em></h1>
+  <p class="lead">Every feature — big or small — follows the same six steps. Click any step to expand.</p>
+  <div class="flow">
+    <span class="flow-node">new</span><span class="flow-arr">→</span>
+    <span class="flow-node">ff</span><span class="flow-arr">→</span>
+    <span class="flow-node">write specs</span><span class="flow-arr">→</span>
+    <span class="flow-node">apply</span><span class="flow-arr">→</span>
+    <span class="flow-node">verify</span><span class="flow-arr">→</span>
+    <span class="flow-node">archive</span>
+  </div>
+  <div class="stepper" id="st-lifecycle"></div>
+</div>
+
+<!-- WRITING SPECS -->
+<div class="page" id="p-specs-writing">
+  <div class="eyebrow">Workflow</div>
+  <h1>Writing <em>specs</em></h1>
+  <p class="lead">Good specs are short, testable, and unambiguous. Here's every file type with a real example.</p>
+  <div class="spec-bar">
+    <button class="spec-tab active" onclick="switchSpec('req',this)">Requirement</button>
+    <button class="spec-tab" onclick="switchSpec('scenario',this)">Scenario</button>
+    <button class="spec-tab" onclick="switchSpec('proposal',this)">Proposal</button>
+    <button class="spec-tab" onclick="switchSpec('tasks',this)">Tasks</button>
+    <button class="spec-tab" onclick="switchSpec('design',this)">Design doc</button>
+  </div>
+  <div class="spec-pane active" id="sp-req">
+    <div class="cb"><span class="h">## Requirement: User Login</span>
+
+The system <span class="ok">SHALL</span> allow users to log in using email and password.
+
+<span class="h">## Acceptance Criteria</span>
+<span class="cm">- Valid credentials authenticate the user</span>
+<span class="cm">- Invalid password returns 401 (without revealing if email exists)</span>
+<span class="cm">- 5 failed attempts triggers a 15-minute lockout</span>
+<span class="cm">- Sessions expire after 24 hours of inactivity</span></div>
+    <div class="spec-note">Use <strong>SHALL</strong> for mandatory behavior. One requirement = one behavior. Each criterion must be directly testable — if you can't write a test for it, rewrite it.</div>
+  </div>
+  <div class="spec-pane" id="sp-scenario">
+    <div class="cb"><span class="h">### Scenario: Successful login</span>
+<span class="ok">GIVEN</span> a registered user with a valid account
+<span class="ok">WHEN</span>  the user submits correct email and password
+<span class="ok">THEN</span>  return a session token and 200 OK
+
+<span class="h">### Scenario: Brute force protection</span>
+<span class="ok">GIVEN</span> a user has failed login 5 times in 15 minutes
+<span class="ok">WHEN</span>  they attempt another login
+<span class="ok">THEN</span>  return 429 Too Many Requests
+<span class="ok">AND</span>   include a Retry-After header</div>
+    <div class="spec-note">GIVEN / WHEN / THEN maps directly to test cases. Write at least one failure scenario — it forces you to think through edge cases before they hit production.</div>
+  </div>
+  <div class="spec-pane" id="sp-proposal">
+    <div class="cb"><span class="h"># Proposal: Google OAuth Login</span>
+
+<span class="kw">## Problem</span>
+<span class="cm">Support receives 40+ password-reset tickets per week.
+Signup conversion sits at 48% — below the industry average of 65%.</span>
+
+<span class="kw">## Solution</span>
+<span class="cm">Add Google OAuth as an alternative path.
+Existing email/password login remains fully unchanged.</span>
+
+<span class="kw">## Expected impact</span>
+<span class="cm">- Signup abandonment: -30%
+- Password-reset tickets: near-zero for OAuth users
+- Onboarding time: 3 min → 15 seconds</span>
+
+<span class="kw">## Out of scope</span>
+<span class="cm">- Apple/GitHub OAuth (separate future change)
+- Mobile app OAuth (separate future change)</span></div>
+    <div class="spec-note">Keep it short: problem, solution, numbers, scope. Future AI sessions use this to understand business intent — not just what to build, but why it matters.</div>
+  </div>
+  <div class="spec-pane" id="sp-tasks">
+    <div class="cb"><span class="h"># Tasks — add-oauth-login</span>
+
+<span class="kw">Backend</span>
+<span class="cm">- [ ] Create GET /auth/google → redirect to Google consent</span>
+<span class="cm">- [ ] Create GET /auth/google/callback → exchange code for tokens</span>
+<span class="cm">- [ ] Implement state param (CSRF protection)</span>
+<span class="cm">- [ ] Store session in httpOnly, Secure, SameSite cookie</span>
+<span class="cm">- [ ] Unit tests: callback handler, token exchange, error states</span>
+
+<span class="kw">Frontend</span>
+<span class="cm">- [ ] Add "Continue with Google" button to login page</span>
+<span class="cm">- [ ] Show loading state during OAuth redirect</span>
+<span class="cm">- [ ] Handle error query params from failed OAuth flow</span></div>
+    <div class="spec-note">Tasks are the primary input for <code>/opsx:apply</code>. Keep each task to a single concrete action. "Add Google login" is not a task — it's a feature. Break it down.</div>
+  </div>
+  <div class="spec-pane" id="sp-design">
+    <div class="cb"><span class="h"># Design: Google OAuth Login</span>
+
+<span class="kw">## Auth flow</span>
+<span class="cm">User → GET /auth/google
+     → Google consent screen
+     → GET /auth/google/callback?code=...&state=...
+     → Exchange code for { access_token, id_token }
+     → Verify id_token with Google public keys
+     → Upsert user (email as unique key)
+     → Issue session cookie → redirect /dashboard</span>
+
+<span class="kw">## DB changes</span>
+<span class="cm">ALTER TABLE users ADD COLUMN google_id VARCHAR(255) UNIQUE;
+ALTER TABLE users ADD COLUMN avatar_url TEXT;</span>
+
+<span class="kw">## Security decisions</span>
+<span class="cm">- State param: 32-byte random, Redis, 10-min TTL
+- Cookie: httpOnly, Secure, SameSite=Lax, 24h TTL
+- Token verify: Google JWKS endpoint, cache keys 1h</span></div>
+    <div class="spec-note">Include the flow (even ASCII art), DB changes, and key security decisions. Future AI sessions use this to stay aligned with what was already decided — preventing re-invention.</div>
+  </div>
+  <div class="sh">The golden rule</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Vague — AI will guess</div><div class="sbs-body"><div class="cb" style="font-size:11px;padding:12px 14px">"Implement auth with Google"</div><div style="padding:10px 14px"><div class="sbs-item"><span class="ic">×</span>AI invents the flow from scratch</div><div class="sbs-item"><span class="ic">×</span>May miss security requirements</div><div class="sbs-item"><span class="ic">×</span>Different result every session</div></div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  Specific — AI will follow</div><div class="sbs-body"><div class="cb" style="font-size:11px;padding:12px 14px">"Implement Task 3 from tasks.md
+per the OAuth design in design.md"</div><div style="padding:10px 14px"><div class="sbs-item"><span class="ic">✓</span>AI follows the exact defined flow</div><div class="sbs-item"><span class="ic">✓</span>Security decisions are pre-made</div><div class="sbs-item"><span class="ic">✓</span>Same result every session</div></div></div></div>
+  </div>
+</div>
+
+<!-- DELTA -->
+<div class="page" id="p-delta">
+  <div class="eyebrow">Concepts</div>
+  <h1>Delta <em>specs</em></h1>
+  <p class="lead">Instead of rewriting whole spec files, OpenSpec tracks exactly what changed — ADDED, MODIFIED, REMOVED, or RENAMED.</p>
+  <div class="sh">Why not just edit the spec directly?</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Editing spec directly</div><div class="sbs-body"><div class="sbs-item"><span class="ic">×</span>PR diff shows entire spec file changed</div><div class="sbs-item"><span class="ic">×</span>Reviewer can't tell what actually changed</div><div class="sbs-item"><span class="ic">×</span>No history of why it changed</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  Using delta specs</div><div class="sbs-body"><div class="sbs-item"><span class="ic">✓</span>PR diff shows only what changed</div><div class="sbs-item"><span class="ic">✓</span>Reviewer immediately sees the delta</div><div class="sbs-item"><span class="ic">✓</span>History preserved in archive forever</div></div></div>
+  </div>
+  <div class="sh">The four operations</div>
+  <div class="grid">
+    <div class="card"><div class="card-icon" style="color:var(--green)">＋ ADDED</div><h3></h3><p>New requirements, scenarios, or criteria entering the system for the first time.</p></div>
+    <div class="card"><div class="card-icon" style="color:var(--gold)">～ MODIFIED</div><h3></h3><p>Existing behavior that's changing. Keeps requirement identity intact while updating its meaning.</p></div>
+    <div class="card"><div class="card-icon" style="color:var(--red)">－ REMOVED</div><h3></h3><p>Retiring behavior. Explicitly marks what's going away so nothing silently disappears.</p></div>
+    <div class="card"><div class="card-icon" style="color:var(--blue)">↔ RENAMED</div><h3></h3><p>Same behavior, new name — preserves history under the updated identifier.</p></div>
+  </div>
+  <div class="sh">Full example</div>
+  <div class="delta">
+    <span class="dl dl-c"><span style="color:var(--muted2);font-size:10px">openspec/changes/add-oauth-login/specs/auth.md</span></span>
+    <span class="dl dl-c"> </span>
+    <span class="dl dl-r">- REMOVED Requirement: Password-only auth</span>
+    <span class="dl dl-c"> </span>
+    <span class="dl dl-a">+ ADDED Requirement: Google OAuth Login</span>
+    <span class="dl dl-a">+   The system SHALL support authentication via Google OAuth 2.0</span>
+    <span class="dl dl-c"> </span>
+    <span class="dl dl-c">  MODIFIED Requirement: Session Management</span>
+    <span class="dl dl-r">-   Sessions expire after 24 hours (hardcoded)</span>
+    <span class="dl dl-a">+   Sessions support configurable expiration, default 24h</span>
+    <span class="dl dl-c"> </span>
+    <span class="dl dl-a">+ ADDED Scenario: OAuth callback success</span>
+    <span class="dl dl-a">+   GIVEN a valid authorization code from Google</span>
+    <span class="dl dl-a">+   WHEN the callback endpoint receives it</span>
+    <span class="dl dl-a">+   THEN exchange for tokens and create a session</span>
+  </div>
+  <div class="spec-note">This delta lives in the change workspace during development. When you run <code>/opsx:archive</code>, it merges into <code>openspec/specs/auth/spec.md</code> automatically — keeping the source of truth current.</div>
+</div>
+
+<!-- COMMANDS -->
+<div class="page" id="p-commands">
+  <div class="eyebrow">Reference</div>
+  <h1>Commands <em>reference</em></h1>
+  <p class="lead">Six commands. One workflow. Click any to expand details and best practices.</p>
+  <div class="flow">
+    <span class="flow-node">openspec init</span><span class="flow-arr">→</span>
+    <span class="flow-node">/opsx:new</span><span class="flow-arr">→</span>
+    <span class="flow-node">/opsx:ff</span><span class="flow-arr">→</span>
+    <span class="flow-node">/opsx:apply</span><span class="flow-arr">→</span>
+    <span class="flow-node">/opsx:verify</span><span class="flow-arr">→</span>
+    <span class="flow-node">/opsx:archive</span>
+  </div>
+  <div id="cmd-acc"></div>
+</div>
+
+<!-- COMPARE -->
+<div class="page" id="p-compare">
+  <div class="eyebrow">Reference</div>
+  <h1><em>Comparisons</em></h1>
+  <p class="lead">How OpenSpec stacks up — with honest tradeoffs.</p>
+  <div class="sh">vs Traditional development</div>
+  <table class="tbl">
+    <thead><tr><th>Area</th><th>Traditional</th><th>OpenSpec</th></tr></thead>
+    <tbody>
+      <tr><td>Requirements</td><td>External tools (Jira, Notion)</td><td class="hl">Inside the repo, in Git</td></tr>
+      <tr><td>AI context</td><td>Re-explained every session</td><td class="hl">Persistent, version-controlled</td></tr>
+      <tr><td>Documentation</td><td>Written once, drifts immediately</td><td class="hl">Updated with each code change</td></tr>
+      <tr><td>Code review</td><td>Only sees code diffs</td><td class="hl">Reviews spec diff + code diff</td></tr>
+      <tr><td>Onboarding</td><td>Read wikis, ask teammates</td><td class="hl">Read specs and archives</td></tr>
+    </tbody>
+  </table>
+  <div class="sh">vs Prompt-only AI coding</div>
+  <div class="sbs">
+    <div class="sbs-col bad"><div class="sbs-head bad">✕  Prompt only</div><div class="sbs-body"><div class="sbs-item"><span class="ic">×</span>Context lost when conversation resets</div><div class="sbs-item"><span class="ic">×</span>Inconsistent output across sessions</div><div class="sbs-item"><span class="ic">×</span>No architectural guardrails</div><div class="sbs-item"><span class="ic">×</span>Every developer prompts differently</div></div></div>
+    <div class="sbs-col good"><div class="sbs-head good">✓  OpenSpec</div><div class="sbs-body"><div class="sbs-item"><span class="ic">✓</span>Specs persist across all sessions</div><div class="sbs-item"><span class="ic">✓</span>Same spec = consistent output</div><div class="sbs-item"><span class="ic">✓</span>Design doc keeps AI in-bounds</div><div class="sbs-item"><span class="ic">✓</span>Everyone references the same files</div></div></div>
+  </div>
+  <div class="sh">vs Other frameworks</div>
+  <table class="tbl">
+    <thead><tr><th>Framework</th><th>OpenSpec advantage</th></tr></thead>
+    <tbody>
+      <tr><td>GitHub Spec Kit</td><td class="hl">Simpler structure, no proprietary conventions</td></tr>
+      <tr><td>BMAD</td><td class="hl">Lower onboarding cost, easier incremental adoption</td></tr>
+      <tr><td>Kiro</td><td class="hl">Vendor-independent — works with any AI tool</td></tr>
+      <tr><td>Pure prompt engineering</td><td class="hl">Persistent context vs prompts that vanish</td></tr>
+    </tbody>
+  </table>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script>
+const lifecycleData=[
+  {n:1,title:'Create change workspace',cmd:'/opsx:new add-feature-name',sub:'Opens an isolated folder for this feature.',detail:'Creates <code>openspec/changes/your-feature/</code>. All planning, design, and implementation work happens here — isolated from other concurrent development.<br><br><strong>Naming:</strong> verb-noun format — <code>add-oauth-login</code>, <code>remove-legacy-api</code>, <code>refactor-auth-module</code>. One change = one logical feature.'},
+  {n:2,title:'Generate planning files',cmd:'/opsx:ff',sub:'Scaffolds proposal, design, tasks, and spec delta stubs.',detail:'Generates four files automatically: <code>proposal.md</code> (the why), <code>design.md</code> (the how), <code>tasks.md</code> (the what), and spec delta stubs.<br><br><strong>Fill these in before writing any code.</strong> A thorough spec review prevents expensive implementation mistakes.'},
+  {n:3,title:'Write the specs',cmd:'Edit spec files',sub:'Define requirements, scenarios, and acceptance criteria.',detail:'Use <strong>SHALL</strong> for mandatory requirements. Add GIVEN/WHEN/THEN scenarios for success paths, failure paths, and edge cases. Define acceptance criteria clearly.<br><br>The more specific you are here, the more consistent and accurate AI output will be.'},
+  {n:4,title:'Implement with AI',cmd:'/opsx:apply',sub:'AI executes tasks sequentially from the planning files.',detail:'Your AI assistant reads the specs and tasks, then implements one task at a time.<br><br><strong>Reference specs explicitly in prompts:</strong> "Implement Task 3 from tasks.md per the OAuth design in design.md." Review after each task — don\'t let drift accumulate.'},
+  {n:5,title:'Verify',cmd:'/opsx:verify',sub:'Validate implementation against specifications.',detail:'Check: every requirement implemented ✓, every scenario behaves correctly ✓, code follows established architecture ✓, security requirements met ✓.<br><br>Run this throughout development — spec drift is much cheaper to fix before archiving.'},
+  {n:6,title:'Archive',cmd:'/opsx:archive',sub:'Finalize, merge delta specs, preserve history.',detail:'Moves the change to <code>openspec/archive/</code> and merges delta specs into <code>openspec/specs/</code>. The full proposal, design, and task history is preserved permanently.<br><br>Future AI sessions and new team members can trace every decision back to this archive.'},
+];
+
+const cmdData=[
+  {name:'openspec init',tag:'CLI',summary:'Initialize in any repository',desc:'Creates the <code>openspec/specs/</code>, <code>openspec/changes/</code>, and <code>openspec/archive/</code> directories. Run once at the project root. Safe on existing projects — touches nothing else.',syntax:'openspec init',uses:['Enable OpenSpec in a new or existing project','Create the three required directories','Prepare the repo for spec-driven AI development'],tips:['Run it early — specs written from day one pay off immediately','For existing projects: initialize first, then start with your most complex module']},
+  {name:'/opsx:new',tag:'Workflow',summary:'Create a feature workspace',desc:'Creates an isolated workspace under <code>openspec/changes/</code>. Every feature, enhancement, or refactor should start here — never edit specs directly without a change workspace.',syntax:'/opsx:new <change-name>',uses:['Start any new feature, fix, or refactor','Isolate work from concurrent development','Container for proposal, design, and tasks'],tips:['Naming: verb-noun — add-oauth-login, remove-legacy-api','One change = one logical feature — don\'t bundle unrelated work']},
+  {name:'/opsx:ff',tag:'Workflow',summary:'Generate all planning files',desc:'Scaffolds <code>proposal.md</code>, <code>design.md</code>, <code>tasks.md</code>, and spec delta stubs for the current change. The most important setup step in OpenSpec.',syntax:'/opsx:ff',uses:['Generate all planning documents in one command','Start with a complete template covering everything you need to fill in','Set up the spec structure before any code is written'],tips:['Never skip reviewing generated files — fill them in before coding','Add edge cases and failure scenarios to specs before implementation begins','Detailed tasks = better AI output — spend real time on tasks.md']},
+  {name:'/opsx:apply',tag:'Workflow',summary:'AI-assisted implementation',desc:'Signals the start of implementation. AI reads the planning files and executes tasks one by one. Best results come from referencing specific tasks and spec files in prompts.',syntax:'/opsx:apply',uses:['Begin spec-driven AI implementation','Give AI structured context from specs instead of free-form prompts','Execute tasks sequentially for maximum consistency'],tips:['Reference specs explicitly: "Implement Task 2 per the auth spec"','Review AI output after each task — don\'t wait until the end','If AI drifts, point it back to the spec immediately']},
+  {name:'/opsx:verify',tag:'Workflow',summary:'Validate against specifications',desc:'Runs validation to confirm implementation aligns with specifications. Catches requirement gaps, spec drift, architecture violations, and missed edge cases.',syntax:'/opsx:verify',uses:['Confirm all requirements are correctly implemented','Validate scenario behavior including failure paths','Ensure AI-generated code follows architectural standards'],tips:['Run throughout development — not just at the end','Human review is essential — automated checks catch surface issues only','Update specs if requirements legitimately evolved during implementation']},
+  {name:'/opsx:archive',tag:'Workflow',summary:'Finalize and preserve history',desc:'Moves the completed change to <code>openspec/archive/</code>, merges delta specs into the source-of-truth <code>openspec/specs/</code>, and permanently preserves the full feature history.',syntax:'/opsx:archive',uses:['Finalize a feature after implementation and verification','Merge delta specs into the official specifications','Build permanent history for future developers and AI sessions'],tips:['Only archive after verification is complete','Never delete archives — they are institutional memory','Archived changes make future AI sessions dramatically smarter about your system']},
+];
+
+const crumbs={intro:'What is OpenSpec?',problems:'Why it exists',concepts:'Core concepts',structure:'Repo structure',install:'Installation',setup:'Project setup',lifecycle:'Feature lifecycle','specs-writing':'Writing specs',delta:'Delta specs',commands:'Commands',compare:'Comparisons'};
+
+function nav(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.s-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('p-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('bc').textContent=crumbs[id]||id;
+  window.scrollTo(0,0);
+}
+
+function buildStepper(cid,data){
+  const c=document.getElementById(cid);if(!c)return;
+  data.forEach((s,i)=>{
+    const row=document.createElement('div');row.className='step-row';
+    row.innerHTML=`<div class="step-spine"><div class="step-num" id="${cid}n${i}" onclick="toggleStep('${cid}',${i})">${String(s.n).padStart(2,'0')}</div>${i<data.length-1?'<div class="step-vline"></div>':''}</div><div class="step-content"><div class="step-title">${s.title}</div><div class="step-sub">${s.sub}</div><div class="step-cmd">${s.cmd}</div><div class="step-detail" id="${cid}d${i}">${s.detail}</div></div>`;
+    c.appendChild(row);
+  });
+}
+
+function toggleStep(cid,i){
+  const d=document.getElementById(cid+'d'+i),n=document.getElementById(cid+'n'+i);
+  const open=d.classList.toggle('open');n.classList.toggle('open',open);
+}
+
+function buildCmds(){
+  const c=document.getElementById('cmd-acc');
+  cmdData.forEach((cmd,i)=>{
+    const el=document.createElement('div');el.className='acc';el.id='acc'+i;
+    el.innerHTML=`<div class="acc-head" onclick="toggleAcc(${i})"><div class="acc-left"><span class="acc-name">${cmd.name}</span><span class="acc-tag">${cmd.tag}</span><span class="acc-summary">${cmd.summary}</span></div><span class="acc-chev" id="chev${i}">▾</span></div><div class="acc-body"><p class="acc-desc">${cmd.desc}</p><div class="acc-syntax">${cmd.syntax}</div><div class="acc-sect">Use cases</div><div class="acc-items">${cmd.uses.map(u=>`<div class="acc-item"><span class="dot"></span>${u}</div>`).join('')}</div><div class="acc-sect">Best practices</div><div class="acc-items">${cmd.tips.map(t=>`<div class="acc-item"><span class="star"></span>${t}</div>`).join('')}</div></div>`;
+    c.appendChild(el);
+  });
+}
+
+function toggleAcc(i){document.getElementById('acc'+i).classList.toggle('open')}
+
+function switchSpec(id,btn){
+  document.querySelectorAll('.spec-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.spec-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('sp-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+}
+
+function chk(el){
+  el.classList.toggle('done');
+  el.querySelector('.chk-box').textContent=el.classList.contains('done')?'✓':'○';
+}
+
+const searchIndex=[
+  {k:['what','overview','intro','introduction'],p:'intro'},
+  {k:['why','problem','context','inconsistent','fragmented','drift','exists'],p:'problems'},
+  {k:['concept','spec','change','task','delta','archive','building block'],p:'concepts'},
+  {k:['folder','structure','directory','tree','repo'],p:'structure'},
+  {k:['install','npm','pnpm','yarn','node','prerequisite','download'],p:'install'},
+  {k:['setup','project','brownfield','existing','git','commit','init','initialize'],p:'setup'},
+  {k:['lifecycle','workflow','step','stage','new','ff','apply','verify'],p:'lifecycle'},
+  {k:['write','writing','requirement','shall','scenario','given','when','then','proposal','tasks','design'],p:'specs-writing'},
+  {k:['delta','added','removed','modified','renamed','tracking'],p:'delta'},
+  {k:['command','opsx','reference'],p:'commands'},
+  {k:['compare','vs','versus','traditional','kiro','bmad'],p:'compare'},
+];
+
+function search(q){
+  if(!q||q.length<2)return;q=q.toLowerCase();
+  for(const e of searchIndex){if(e.k.some(k=>k.includes(q)||q.includes(k))){const b=document.querySelector(`.s-btn[onclick*="'${e.p}'"]`);nav(e.p,b);return;}}
+}
+
+buildStepper('st-lifecycle',lifecycleData);
+buildCmds();
+
+// Theme toggle
+function toggleTheme(){
+  const isLight=document.documentElement.classList.toggle('light');
+  document.getElementById('icon-moon').style.display=isLight?'none':'block';
+  document.getElementById('icon-sun').style.display=isLight?'block':'none';
+  // update sidebar bg for light
+  localStorage.setItem('theme',isLight?'light':'dark');
+}
+// Restore saved theme
+(function(){
+  if(localStorage.getItem('theme')==='light'){
+    document.documentElement.classList.add('light');
+    document.getElementById('icon-moon').style.display='none';
+    document.getElementById('icon-sun').style.display='block';
+  }
+})();
+</script>
+</body>
+</html>
